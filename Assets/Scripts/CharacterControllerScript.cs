@@ -1,94 +1,108 @@
 using UnityEngine;
-using System.Collections;
 
 public class CharacterControllerScript : MonoBehaviour
 {
-    //переменная для установки макс. скорости персонажа
-    public float maxSpeed = 10f; 
-    //переменная для определения направления персонажа вправо/влево
+    [Header("Speed Settings")]
+    [Tooltip("Базовая скорость движения")]
+    public float maxSpeed = 5f;          // Уменьшена максимальная скорость
+    [Tooltip("Скорость в режиме спринта")]
+    public float sprintSpeed = 7f;       // Уменьшена скорость спринта
+    [Tooltip("Время разгона до максимальной скорости (секунды)")]
+    public float accelerationTime = 0.8f; // Увеличено время разгона
+    
+    [Header("Advanced Settings")]
+    [Tooltip("Множитель ускорения при спринте")]
+    [Range(1f, 2f)] 
+    public float sprintAccelMultiplier = 3f; // Небольшой множитель вместо резкого скачка
+    
     private bool isFacingRight = true;
-    //ссылка на компонент анимаций
-    private Animator anim;
-	//находится ли персонаж на земле или в прыжке?
-	private bool isGrounded = false;
-	//ссылка на компонент Transform объекта
-	//для определения соприкосновения с землей
-	public Transform groundCheck;
-	//радиус определения соприкосновения с землей
-	private float groundRadius = 0.1f;
-	//ссылка на слой, представляющий землю
-	public LayerMask whatIsGround;
+    private bool isGrounded = false;
+    private bool isSprinting = false;
+    private float groundRadius = 0.1f;
+    private float currentVelocityX;
+    private float accelerationProgress;
+    private float currentTargetSpeed;
 
-    /// <summary>
-    /// Начальная инициализация
-    /// </summary>
-	private void Start()
+    [Header("References")]
+    public Transform groundCheck;
+    public LayerMask whatIsGround;
+    public Animator anim;
+
+    private void Start()
     {
-        anim = GetComponent<Animator>();
+        if (anim == null)
+            anim = GetComponent<Animator>();
     }
-	
-    /// <summary>
-    /// Выполняем действия в методе FixedUpdate, т. к. в компоненте Animator персонажа
-    /// выставлено значение Animate Physics = true и анимация синхронизируется с расчетами физики
-    /// </summary>
-	private void FixedUpdate()
+
+    private void FixedUpdate()
     {
-		//определяем, на земле ли персонаж
-		isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, whatIsGround); 
-		//устанавливаем соответствующую переменную в аниматоре
-		anim.SetBool ("Ground", isGrounded);
-		//устанавливаем в аниматоре значение скорости взлета/падения
-		anim.SetFloat ("vSpeed", GetComponent<Rigidbody2D>().linearVelocity.y);
-        //если персонаж в прыжке - выход из метода, чтобы не выполнялись действия, связанные с бегом
+        // Проверка земли
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, whatIsGround);
+        anim.SetBool("Ground", isGrounded);
+        anim.SetFloat("vSpeed", GetComponent<Rigidbody2D>().linearVelocity.y);
+
         if (!isGrounded)
             return;
-        //используем Input.GetAxis для оси Х. метод возвращает значение оси в пределах от -1 до 1.
-        //при стандартных настройках проекта 
-        //-1 возвращается при нажатии на клавиатуре стрелки влево (или клавиши А),
-        //1 возвращается при нажатии на клавиатуре стрелки вправо (или клавиши D)
+
+        // Проверка спринта
+        isSprinting = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         float move = Input.GetAxis("Horizontal");
 
-        //в компоненте анимаций изменяем значение параметра Speed на значение оси Х.
-        //приэтом нам нужен модуль значения
-        anim.SetFloat("Speed", Mathf.Abs(move));
+        // Плавное изменение целевой скорости
+        currentTargetSpeed = isSprinting ? sprintSpeed : maxSpeed;
+        
+        // Плавный разгон с разным временем для разных режимов
+        if (Mathf.Abs(move) > 0.1f)
+        {
+            float accelerationRate = isSprinting ? 
+                (1f/accelerationTime) * sprintAccelMultiplier : 
+                (1f/accelerationTime);
+                
+            accelerationProgress = Mathf.Min(accelerationProgress + Time.fixedDeltaTime * accelerationRate, 1f);
+        }
+        else
+        {
+            accelerationProgress = 0f;
+        }
 
-        //обращаемся к компоненту персонажа RigidBody2D. задаем ему скорость по оси Х, 
-        //равную значению оси Х умноженное на значение макс. скорости
-        GetComponent<Rigidbody2D>().linearVelocity = new Vector2(move * maxSpeed, GetComponent<Rigidbody2D>().linearVelocity.y);
+        // Расчет текущей скорости с плавным разгоном
+        currentVelocityX = Mathf.Lerp(
+            0f,
+            move * currentTargetSpeed,
+            accelerationProgress
+        );
 
-        //если нажали клавишу для перемещения вправо, а персонаж направлен влево
-        if(move > 0 && !isFacingRight)
-            //отражаем персонажа вправо
+        // Применение скорости
+        GetComponent<Rigidbody2D>().linearVelocity = new Vector2(
+            currentVelocityX,
+            GetComponent<Rigidbody2D>().linearVelocity.y
+        );
+
+        // Анимации
+        anim.SetFloat("Speed", Mathf.Abs(currentVelocityX));
+        anim.SetBool("IsSprinting", isSprinting && Mathf.Abs(move) > 0.1f);
+
+        // Поворот персонажа
+        if (move > 0 && !isFacingRight)
             Flip();
-        //обратная ситуация. отражаем персонажа влево
         else if (move < 0 && isFacingRight)
             Flip();
     }
 
-	private void Update()
-	{
-		//если персонаж на земле и нажат пробел...
-		if (isGrounded && Input.GetKeyDown (KeyCode.Space)) 
-		{
-			//устанавливаем в аниматоре переменную в false
-			anim.SetBool("Ground", false);
-			//прикладываем силу вверх, чтобы персонаж подпрыгнул
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 600));				
-		}
-	}
+    private void Update()
+    {
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
+        {
+            anim.SetBool("Ground", false);
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 650f));
+        }
+    }
 
-    /// <summary>
-    /// Метод для смены направления движения персонажа и его зеркального отражения
-    /// </summary>
     private void Flip()
     {
-        //меняем направление движения персонажа
         isFacingRight = !isFacingRight;
-        //получаем размеры персонажа
         Vector3 theScale = transform.localScale;
-        //зеркально отражаем персонажа по оси Х
         theScale.x *= -1;
-        //задаем новый размер персонажа, равный старому, но зеркально отраженный
         transform.localScale = theScale;
     }
 }
