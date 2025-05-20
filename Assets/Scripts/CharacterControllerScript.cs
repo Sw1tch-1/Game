@@ -80,7 +80,7 @@ public class CharacterControllerScript : MonoBehaviour
 
         // Анимации
         anim.SetFloat("Speed", Mathf.Abs(currentVelocityX));
-        anim.SetBool("IsSprinting", isSprinting && Mathf.Abs(move) > 0.1f);
+        anim.SetBool("IsSprinting", isSprinting && Mathf.Abs(currentVelocityX) > 0.1f);
 
         // Поворот персонажа
         if (move > 0 && !isFacingRight)

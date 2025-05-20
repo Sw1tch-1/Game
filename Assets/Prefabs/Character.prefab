@@ -200,10 +200,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 10
+  sprintSpeed: 7
+  accelerationTime: 0.8
+  sprintAccelMultiplier: 2
   groundCheck: {fileID: 21253686807906657}
   whatIsGround:
     serializedVersion: 2
     m_Bits: 64
+  anim: {fileID: 0}
 --- !u!1 &6988750663253146142
 GameObject:
   m_ObjectHideFlags: 0
