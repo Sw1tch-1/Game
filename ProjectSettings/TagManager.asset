@@ -14,7 +14,7 @@ TagManager:
   - UI
   - Platform
   - Bricks
-  - 
+  - light
   - 
   - 
   - 
@@ -41,6 +41,24 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: 1
+    uniqueID: 3482681601
+    locked: 0
+  - name: 2
+    uniqueID: 3628785935
+    locked: 0
+  - name: 3
+    uniqueID: 3410277329
+    locked: 0
+  - name: 4
+    uniqueID: 3166369417
+    locked: 0
+  - name: 5
+    uniqueID: 1774884473
+    locked: 0
+  - name: 6
+    uniqueID: 3790705779
     locked: 0
   m_RenderingLayers:
   - Default
