@@ -20,31 +20,38 @@ public class PlayerRespawn : MonoBehaviour
 
     // Корутина для респавна с задержкой
     private IEnumerator RespawnWithDelay()
-{
-    isRespawning = true;
-    
-    // 1. Отключаем визуал и физику
-    GetComponent<SpriteRenderer>().enabled = false;
-    GetComponent<Collider2D>().enabled = false;
-
-    // 2. Проигрываем звук респавна
-    if (AudioManager.Instance != null)
     {
-        AudioManager.Instance.PlayRespawnSound(transform.position);
+        isRespawning = true;
+
+        // 1. Отключаем визуал и физику
+        GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
+
+        // 2. Проигрываем звук респавна
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayRespawnSound(transform.position);
+        }
+
+        // 3. Ждём
+        yield return new WaitForSeconds(respawnDelay);
+
+        // 4. Возвращаем
+        if (spawnPoint != null)
+        {
+            transform.position = spawnPoint.position;
+        }
+
+        GetComponent<SpriteRenderer>().enabled = true;
+        GetComponent<Collider2D>().enabled = true;
+        isRespawning = false;
     }
-
-    // 3. Ждём
-    yield return new WaitForSeconds(respawnDelay);
-
-    // 4. Возвращаем
-    if (spawnPoint != null)
+     public void ForceRespawn()
     {
-        transform.position = spawnPoint.position;
+        if (!isRespawning)
+        {
+            StartCoroutine(RespawnWithDelay());
+        }
     }
-
-    GetComponent<SpriteRenderer>().enabled = true;
-    GetComponent<Collider2D>().enabled = true;
-    isRespawning = false;
-}
 
 }
