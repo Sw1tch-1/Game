@@ -99,27 +99,6 @@ public class SkullPatrol : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        if (!drawGizmos) return;
-
-        Gizmos.color = gizmoColor;
-        float height = 2f;
-        Vector3 center = Application.isPlaying ? spawnPosition : transform.position;
-        
-        Vector3 leftPos = new Vector3(center.x - patrolRange, center.y, 0);
-        Vector3 rightPos = new Vector3(center.x + patrolRange, center.y, 0);
-        
-        Gizmos.DrawLine(leftPos + Vector3.up * height/2, leftPos - Vector3.up * height/2);
-        Gizmos.DrawLine(rightPos + Vector3.up * height/2, rightPos - Vector3.up * height/2);
-        Gizmos.DrawLine(leftPos, rightPos);
-        Gizmos.DrawWireSphere(leftPos, 0.15f);
-        Gizmos.DrawWireSphere(rightPos, 0.15f);
-
-        Gizmos.color = new Color(1, 0.5f, 0, 0.3f);
-        Gizmos.DrawWireSphere(transform.position, soundActivationDistance);
-
-    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
