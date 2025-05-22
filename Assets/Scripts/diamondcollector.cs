@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
-using UnityEngine;
+
 public class diamondcollector : MonoBehaviour
 {
     public static diamondcollector Instance;

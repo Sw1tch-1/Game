@@ -5,6 +5,10 @@ public class SkullPatrol : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float speed = 1.5f;
     [SerializeField] private float patrolRange = 5f; 
+
+    [Header("Sound Settings")]
+    [SerializeField] private AudioClip patrolSound;
+    [SerializeField] private float soundActivationDistance = 4f;
     
     [Header("Debug")]
     [SerializeField] private bool drawGizmos = true;
@@ -15,6 +19,9 @@ public class SkullPatrol : MonoBehaviour
     private float leftBound;
     private float rightBound;
     private Vector3 spawnPosition;
+    private Transform playerTransform;
+    private bool soundActive;
+
 
     void Start()
     {
@@ -24,22 +31,47 @@ public class SkullPatrol : MonoBehaviour
         movingRight = true;
         
         spriteRenderer = GetComponent<SpriteRenderer>();
+        playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+
         if (spriteRenderer == null)
         {
-            Debug.LogError($"На объекте {gameObject.name} отсутствует SpriteRenderer!", this);
+            Debug.LogError("Missing SpriteRenderer on SkullPatrol", this);
         }
-        if (leftBound >= rightBound)
-        {
-            Debug.LogWarning($"Рассчитанные границы равны на {gameObject.name}! Увеличьте patrolRange.", this);
-            rightBound = leftBound + 0.1f; 
-        }
+
     }
 
     void Update()
     {
         MoveCharacter();
         FlipSprite();
+        UpdateSoundState();
     }
+
+    private void UpdateSoundState()
+    {
+        if (playerTransform == null || patrolSound == null || AudioManager.Instance == null)
+        {
+            if (soundActive) AudioManager.Instance.StopProximitySound();
+            return;
+        }
+
+        float distance = Vector3.Distance(transform.position, playerTransform.position);
+        bool shouldPlay = distance <= soundActivationDistance;
+
+        if (shouldPlay != soundActive)
+        {
+            soundActive = shouldPlay;
+            if (shouldPlay)
+            {
+                AudioManager.Instance.PlayProximitySound(patrolSound);
+            }
+            else
+            {
+                AudioManager.Instance.StopProximitySound();
+            }
+        }
+    }
+
 
     private void MoveCharacter()
     {
@@ -77,11 +109,16 @@ public class SkullPatrol : MonoBehaviour
         
         Vector3 leftPos = new Vector3(center.x - patrolRange, center.y, 0);
         Vector3 rightPos = new Vector3(center.x + patrolRange, center.y, 0);
+        
         Gizmos.DrawLine(leftPos + Vector3.up * height/2, leftPos - Vector3.up * height/2);
         Gizmos.DrawLine(rightPos + Vector3.up * height/2, rightPos - Vector3.up * height/2);
         Gizmos.DrawLine(leftPos, rightPos);
         Gizmos.DrawWireSphere(leftPos, 0.15f);
         Gizmos.DrawWireSphere(rightPos, 0.15f);
+
+        Gizmos.color = new Color(1, 0.5f, 0, 0.3f);
+        Gizmos.DrawWireSphere(transform.position, soundActivationDistance);
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

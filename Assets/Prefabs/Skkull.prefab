@@ -127,6 +127,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   patrolRange: 4
+  patrolSound: {fileID: 8300000, guid: 5312f7dc89151485cb33dbc3a3c083f1, type: 3}
+  soundActivationDistance: 9
   drawGizmos: 1
   gizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!60 &8621472091784015323
