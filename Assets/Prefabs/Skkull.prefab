@@ -79,7 +79,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 5632637701511489044, guid: a1df0269f841880458c557517324ad44, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -129,7 +129,6 @@ MonoBehaviour:
   patrolRange: 4
   patrolSound: {fileID: 8300000, guid: 5312f7dc89151485cb33dbc3a3c083f1, type: 3}
   soundActivationDistance: 9
-  drawGizmos: 1
   gizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!60 &8621472091784015323
 PolygonCollider2D:
