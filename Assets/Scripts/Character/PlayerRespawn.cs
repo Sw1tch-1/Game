@@ -1,50 +1,69 @@
 using UnityEngine;
-using System.Collections; 
+using System.Collections;
 
 public class PlayerRespawn : MonoBehaviour
 {
+    [Header("Respawn Settings")]
     public Transform spawnPoint;
     public float fallThreshold = -10f;
-    public float respawnDelay = 1f; 
+    public float respawnDelay = 1f;
 
-    private bool isRespawning; 
+    [Header("Effects")]
+    public ParticleSystem respawnParticles;
+
+    private bool isRespawning;
+    private SpriteRenderer spriteRenderer;
+    private Collider2D playerCollider;
+
+    void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        playerCollider = GetComponent<Collider2D>();
+    }
 
     void Update()
     {
         if (transform.position.y < fallThreshold && !isRespawning)
         {
-            StartCoroutine(RespawnWithDelay());
+            StartCoroutine(RespawnWithEffects());
         }
     }
 
-    private IEnumerator RespawnWithDelay()
+    private IEnumerator RespawnWithEffects()
     {
         isRespawning = true;
 
-        GetComponent<SpriteRenderer>().enabled = false;
-        GetComponent<Collider2D>().enabled = false;
+        spriteRenderer.enabled = false;
+        playerCollider.enabled = false;
 
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayRespawnSound(transform.position);
         }
 
-        yield return new WaitForSeconds(respawnDelay);
-
         if (spawnPoint != null)
         {
             transform.position = spawnPoint.position;
         }
 
-        GetComponent<SpriteRenderer>().enabled = true;
-        GetComponent<Collider2D>().enabled = true;
+        if (respawnParticles != null)
+        {
+            Instantiate(respawnParticles, transform.position, Quaternion.identity);
+        }
+
+        yield return new WaitForSeconds(respawnDelay);
+
+        spriteRenderer.enabled = true;
+        playerCollider.enabled = true;
+
         isRespawning = false;
     }
-     public void ForceRespawn()
+
+    public void ForceRespawn()
     {
         if (!isRespawning)
         {
-            StartCoroutine(RespawnWithDelay());
+            StartCoroutine(RespawnWithEffects());
         }
     }
 }
