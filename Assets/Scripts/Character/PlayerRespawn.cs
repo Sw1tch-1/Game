@@ -48,7 +48,8 @@ public class PlayerRespawn : MonoBehaviour
 
         if (respawnParticles != null)
         {
-            Instantiate(respawnParticles, transform.position, Quaternion.identity);
+            ParticleSystem particles = Instantiate(respawnParticles, transform.position, Quaternion.identity);
+            Destroy(particles.gameObject, particles.main.duration);
         }
 
         yield return new WaitForSeconds(respawnDelay);
