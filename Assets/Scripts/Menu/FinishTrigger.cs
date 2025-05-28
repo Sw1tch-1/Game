@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
 
-public class SceneChanger : MonoBehaviour
+public class FinishTrigger : MonoBehaviour
 {
-    [SerializeField] private string targetSceneName;
-    [SerializeField] private int value = 1;
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e65ec1186a55a4485989c47ca70434c7
+guid: 647ca7bcc1ced4159a91ddf6c89cd1d2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4797428408311423391
-    second: Hover@3x 1_0
+      213: 8023111896851779302
+    second: glowlogoq_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Hover@3x 1_0
+      name: glowlogoq_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 264
-        height: 264
+        x: 90
+        y: 153
+        width: 386
+        height: 178
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 16eda3fc74c1c6db0800000000000000
-      internalID: -4797428408311423391
+      spriteID: 6ee8f0d03c1d75f60800000000000000
+      internalID: 8023111896851779302
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Hover@3x 1_0: -4797428408311423391
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

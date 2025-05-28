@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StartButton : MonoBehaviour
+public class LevelCompleteController : MonoBehaviour
 {
-    public void StartGame()
+    public void LoadLevel1()
     {
         SceneManager.LoadScene(1);
     }
